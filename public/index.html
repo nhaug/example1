@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1. Example</title>
+    <script src="vue.global.js"></script>
+  </head>
+  <body>
+    <h1>1. Beispiel</h1>
+    <div id="app">
+      <!-- Interpolationzum direkten ugreifen auf Daten -->
+      <p>{{ message }}</p>
+      <p>{{ getMessageInUpper() }}</p>
+
+      <!-- computed method, neu berechneter Wert nur wenn auch die Änderung stattfindet (werden gecached) -->
+      <p>{{ messageInLower }}</p>
+
+      <!-- One Way Data Binding -->
+      <p><a v-bind:href="link.href"> {{link.title}}</a></p>
+      <p><a :href="link.href" v-html="link.title"></a></p>
+
+      <!-- Event Binding: um Signale an den Code zu geben -->
+      <p><button onclick="alert('You Clicked ....')">JS: Click here</button></p>
+      <p><button v-on:click="sayHello()">Vue: Click here</button></p>
+
+      <!-- Two Way data binding : daten aus der UI in die Programmwelt zu übertragen und umgekert -->
+      <!-- $event repräsentiret das Event typische  -->
+      <p>
+        <input
+          type="text"
+          :value="message"
+          @input="message = $event.target.value"
+        />
+      </p>
+      <p><input type="text" v-model="message" /></p>
+
+      <!-- Components -->
+      <!-- der : dient zur Datenbindung -->
+      <counter-component :initial-value="10" @counter-changed="logCounter($event)"></counter-component>
+      <counter-component :initial-value="20"></counter-component>
+      <counter-component :initial-value="30"></counter-component>
+    </div>
+
+    <script type="text/html" id="counterComponent">
+      <p>Counter: {{ counter }}</p>
+      <p><button @click="increase()">+</button></p>
+      <p><button @click="decrease()">-</button></p>
+    </script>
+
+    <script>
+      const counterComponent = {
+        // zum ansprechen von der Komponente in PascalCase
+        name: "CounterComponent",
+        // Die Oberfläche : kann über zwei mehtoden geschrieben werden
+        template: "#counterComponent",
+        props : {
+            initialValue : Number
+        },
+        emits : {
+            // auslösen der Daten , diese Namen repräsentieren events
+            // returns boolean
+            counterChanged(value) {
+                console.log(`counterChanged: ${value}`)
+                if (typeof(value) !== "number") {
+                    return false
+                }
+                return true
+            }
+        },
+        data() {
+          return {
+            counter: 0,
+          };
+        },
+
+        methods: {
+          increase() {
+            this.counter++;
+            console.log(this.counter);
+            this.$emit('counterChanged', this.counter);
+          },
+          decrease() {
+            this.counter--;
+            console.log(this.counter);
+          },
+        },
+        mounted() {
+            console.log(`Component CounterComponent was mounted with initialValue ${this.initialValue}`)
+            this.counter = this.initialValue;
+        }
+      };
+
+      // Options API
+      const app = Vue.createApp({
+        // zum bekanntmachen von komponenten in kebap-case
+        components: {
+          "counter-component": counterComponent,
+        },
+        // Funktion zum return von Daten
+        data() {
+          return {
+            message: "Hello World from vue.js!",
+            // Können auch komplexe Objekte sein
+            link: {
+              // Markup funktioniert an dieser Stelle nicht! Html wird encoded
+              title: "<b><i>Vue.js-Website</i></b>",
+              href: "https://vuejs.org/",
+            },
+          };
+        },
+        // Mehtoden die etwas berechnen, wie eigenschaft aufzurufen
+        computed: {
+          messageInLower() {
+            return this.message.toLowerCase();
+          },
+        },
+        methods: {
+          getMessageInUpper() {
+            // zugriff auf isntanz variablen via this aus data()
+            return this.message.toUpperCase();
+          },
+          sayHello() {
+            alert("you clicked here with vue ");
+          },
+          logCounter(value) {
+            console.log("logcounter",value);
+          }
+        },
+        watch: {
+          // muss zur Variable aus data() passen
+          message(newValue, oldValue) {
+            console.log(newValue, oldValue);
+          },
+        },
+        // events können genutzt werden um auf events zu reagieren.
+        // mounted ist ein sehr typisches Event, dass beim laden der app gemacht wird
+        mounted() {
+            console.log('app was mounted')
+        }
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

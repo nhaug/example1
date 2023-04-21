@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todos</title>
+    <script src="vue.global.js"></script>
+</head>
+
+<body>
+    <h1>Todos</h1>
+
+    <div id="app">
+        <p>
+            New Todo: <input type="text" placeholder="todo bitte eingeben" v-model="newTodo" />
+            <button @click="addTodo()">+</button>
+        </p>
+
+        <!-- v-for -->
+        <p>TODOS</p>
+        <ul>
+            <p v-if="listOfTodos.length < 1">Keine Todos bekannt</p>
+            <li v-for="(todo, index) in listOfTodos">
+                <button @click="deleteTodo(index)"> - </button> {{ todo }}
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // Options-API
+        const app = Vue.createApp({
+            components: {},
+            data() {
+                return {
+                    newTodo: "",
+                    listOfTodos: [],
+                };
+            },
+            computed: {},
+            methods: {
+                addTodo() {
+                    this.listOfTodos.push(this.newTodo);
+                    console.log(this.listOfTodos);
+                    this.newTodo = '';
+                },
+                deleteTodo(index) {
+                    this.listOfTodos.splice(index, 1);
+                },
+            },
+            watch: {},
+            mounted() {
+                console.log("app-mounted...");
+            },
+        });
+        app.mount("#app");
+    </script>
+</body>
+
+</html>

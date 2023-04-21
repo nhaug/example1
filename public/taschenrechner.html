@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taschenrechner</title>
+  <script src="vue.global.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <taschenrechner-component> </taschenrechner-component>
+    <taschenrechner-component> </taschenrechner-component>
+  </div>
+
+  <script type="text/html" id="taschenrechnerComponent">
+    <h1>Taschenrechner</h1>
+    <p><input type="text" placeholder="1. Wert" v-model.number="value1"></p>
+    <p><input type="text" placeholder="2. Wert" v-model.number="value2"></p>
+    <p>
+      <select v-model="operator">
+        <option value="+"> + </option>
+        <option value="-"> - </option>
+        <option value="*"> * </option>
+        <option value="/"> / </option>
+      </select>
+    </p>
+
+    <p><button v-on:click="calculate()">Rechnen ...</button></p>
+
+    <p>Ergebnis: {{ result }}</p>
+  </script>
+
+  <script>
+
+    const taschenrechnerComponent = {
+              // zum ansprechen von der Komponente in PascalCase
+        name: "TaschenrechnerComponent",
+        // Die Oberfläche : kann über zwei mehtoden geschrieben werden
+        template: "#taschenrechnerComponent",
+        data() {
+        return {
+          value1:'',
+          value2:'',
+          operator:'+',
+          result: null
+        }
+      },
+      computed: {
+        value1toInt() {
+          return parseInt(this.value1);
+        }
+      },
+      methods: {
+        calculate() {
+          switch (this.operator) {
+            case '+': this.result = this.value1toInt + this.value2; break
+            case '-': this.result =  this.value1 - this.value2; break
+            case '*': this.result =  this.value1 * this.value2; break
+            case '/': this.result =  this.value1 / this.value2; break
+            default: throw "operator unbekannt"
+          }
+        },
+      },
+      watch: {
+        value1(newValue, oldValue) {
+          console.log(`neuer Wert eingegeben ${newValue}`)
+        },
+        value2(newValue, oldValue) {
+          console.log(`neuer Wert eingegeben ${newValue}`)
+        },
+        value1(newValue, oldValue) {
+          console.log(`weiterer Watch auf value1 neuer Wert eingegeben ${newValue}`)
+        }
+      },
+    }
+
+    // Options-API
+    const app = Vue.createApp({
+      components: {
+        'taschenrechner-component' : taschenrechnerComponent
+      },
+      data() {
+        return {}
+      },
+      computed: {
+
+      },
+      methods: {
+
+      },
+      watch: {
+
+      },
+      mounted() {
+        console.log('app-mounted...');
+      }
+    });
+    app.mount('#app');
+
+  </script>
+</body>
+</html>
