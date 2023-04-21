@@ -4,12 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server",
+    "dev": "tsc --watch",
+    "build": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Nils Haug <nils.haug@f-i.de>",
   "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.6.4"
+  },
   "devDependencies": {
+    "@types/jquery": "^3.5.16",
     "live-server": "^1.2.2",
     "typescript": "^5.0.4"
   }
