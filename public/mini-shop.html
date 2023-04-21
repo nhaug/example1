@@ -13,18 +13,22 @@
   <div id="app">
     <h2>Produkte</h2>
     <ul>
-      <li>Product A</li>
-      <li>Product B</li>
-      <li>Product C: 123.45 <button> + </button></li>
+      <li v-for="(item, key) in productsList" :key="key">
+        {{ item.title }}: {{ item.price }}
+        <button type="button" @click="addToBasket(item)"> + </button>
+      </li>
     </ul>
 
 
     <h2>Warenkorb</h2>
     <ul>
-      <li>Product C: 123.45 <button> - </button></li>
+      <li v-for="(item, key) in basketList" :key="key">
+        {{ item.title }}: {{ item.price }}
+        <button type="button" @click="removeFromBasket(key)"> - </button>
+      </li>
     </ul>
 
-    <p>Betrag: 1234.56</p>
+    <p>Betrag: {{ basketAmount }}</p>
   </div>
 
 
@@ -36,6 +40,7 @@
     // Composition-API
 
     // Composables
+    
 
     const app = Vue.createApp({
       components: {
@@ -46,13 +51,60 @@
       setup() {
         console.log('app.setup');
 
+        const productsList = Vue.ref([
+          {
+            id: 1,
+            title: 'Kaffee',
+            price: 2.50
+          },
+          {
+            id: 2,
+            title: 'Bier',
+            price: 2.50
+          },
+          {
+            id: 3,
+            title: 'Wodka',
+            price: 2.50
+          },
+          {
+            id: 4,
+            title: 'Whisky',
+            price: 2.50
+          },
+          {
+            id: 5,
+            title: 'Tee',
+            price: 2.50
+          },
+        ]);
+
+        const basketList = Vue.ref([]);
+
+        const basketAmount = Vue.computed(() => {
+          return basketList.value.reduce((total, item) => {
+            return total + item.price;
+          }, 0);
+        });
+
+        const addToBasket = (item) => {
+          basketList.value.push(item);
+        }
+
+        const removeFromBasket = (key) => {
+          basketList.value.splice(key, 1);
+        }
         
         Vue.onMounted(() => {
           console.log('app-mounted...');
         });
 
         return {
-
+          productsList,
+          basketList,
+          addToBasket,
+          basketAmount,
+          removeFromBasket
         }
       }
     });
