@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1. Beispiel</title>
+  <script src="vue.global.js"></script>
+</head>
+<body>
+  <h1>1. Beispiel</h1>
+
+  <div id="app">
+    <!-- Interpolation -->
+    <p>{{ message }}</p>
+    <p>{{ getMessageInUpper() }}</p>
+    <p>{{ messageInLower }}</p>
+
+    <p>{{ message2 }}</p>
+    <p>{{ getMessage2InUpper() }}</p>
+    <p>{{ message2InLower }}</p>
+
+    <!-- One-Way-Data-Binding -->
+    <p><a v-bind:href="link.href">{{ link.title }}</a></p>
+    <p><a :href="link.href" v-html="link.title"></a></p>
+
+    <!-- Event-Binding -->
+    <p><button onclick="alert('You Clicked...')">JS: Click here!</button></p>
+    <p><button v-on:click="sayHello()">Vue: Click here!</button></p>
+    <p><button @click="sayHello()">Vue: Click here!</button></p>
+
+    <!-- Two-Way-Data-Binding -->
+    <p><input type="text" :value="message" @input="message = $event.target.value"></p>
+    <p><input type="text" v-model="message"></p>
+
+    <!-- Components -->
+    <counter-component :initial-value="10" @counter-changed="logCounter($event)"></counter-component>
+    <counter-component :initial-value="20" @counter-changed="logCounter($event)"></counter-component>
+    <counter-component :initial-value="30" @counter-changed="logCounter($event)"></counter-component>
+  </div>
+
+  <script type="text/html" id="counterComponent">
+    <p>
+      <button @click="inc()"> + </button> 
+      Counter: {{ counter }} 
+      <button @click="dec()"> - </button>
+    </p>
+  </script>
+
+  <script>
+    const counterComponent = {
+      // PascalCase
+      name: 'CounterComponent',
+      template: '#counterComponent',
+      props: {
+        // kebap-case: initial-value
+        initialValue: Number
+      },
+      emits: {
+        counterChanged(value) {
+          console.log('counterChanged', value);
+          if (typeof(value) !== 'number') return false;
+
+          return true;
+        }
+      },
+      data() {
+        return {
+          counter: 0
+        }
+      },
+      methods: {
+        inc() {
+          console.log('inc');
+          this.counter++;
+          this.$emit('counterChanged', this.counter);
+        },
+        dec() {
+          console.log('dec');
+          this.counter--;
+          this.$emit('counterChanged', this.counter);
+        }
+      },
+      mounted() {
+        console.log('counter-component-mounted...');
+        this.counter = this.initialValue;
+      }
+    };
+
+
+    // Composition-API
+    const app = Vue.createApp({
+      components: {
+        // kebap-case
+        'counter-component': counterComponent,
+      },
+
+      setup() {
+        console.log('app.setup');
+        // zur Initilisierung von Datenelementen gibt es 2 Befehle
+        const message = Vue.ref("Hello World from Vue.js");
+        const message2 = Vue.ref("Hello World from Vue.js");
+
+        // im setup bauen wir unsere Datenstruktur auf und müssen sie dann auch hier zurückgeben.
+        return {
+          message,
+          message2
+        }
+      },
+      data() {
+        return {
+          link: {
+            title: '<b><i>Vue.js-Website</i></b>',
+            href: 'https://vuejs.org/'
+          }
+        }
+      },
+      computed: {
+        messageInLower() {
+          console.log('messageInLower');
+          return this.message.toLowerCase();
+        },
+        message2InLower() {
+          console.log('message2InLower');
+          return this.message2.toLowerCase();
+        }
+      },
+      methods: {
+        getMessageInUpper() {
+          console.log('getMessageInUpper');
+          return this.message.toUpperCase();
+        },
+        getMessage2InUpper() {
+          console.log('getMessage2InUpper');
+          return this.message2.toUpperCase();
+        },
+        sayHello() {
+          console.log('You Clicked...!')
+        },
+        logCounter(value) {
+          console.log('logCounter', value);
+        }
+      },
+      watch: {
+        message(newValue, oldValue) {
+          console.log(newValue, oldValue);
+        }
+      },
+      mounted() {
+        console.log('app-mounted...');
+      }
+    });
+    app.mount('#app');
+
+  </script>
+</body>
+</html>
