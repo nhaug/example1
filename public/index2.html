@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +8,7 @@
   <title>1. Beispiel</title>
   <script src="vue.global.js"></script>
 </head>
+
 <body>
   <h1>1. Beispiel</h1>
 
@@ -52,41 +54,65 @@
       // PascalCase
       name: 'CounterComponent',
       template: '#counterComponent',
-      props: {
-        // kebap-case: initial-value
+      setup(props, ctx) {
+        console.log("counterComponent.setup", props, ctx);
+
+        const {emit} = ctx;
+
+        const counter = Vue.ref(0);
+
+        const inc = (() => {
+          console.log('increase');
+          counter.value++;
+          emit('counterChanged', counter.value);
+        });
+        const dec = (() => {
+          console.log('decrease');
+          counter.value--;
+          emit('counterChanged', counter.value);
+        });
+        Vue.onMounted(() => {
+          console.log('counter-component-mounted...');
+          counter.value = props.initialValue;
+        });
+
+        return {
+          counter,
+          inc,
+          dec,
+        }
+      },
+      props : {
         initialValue: Number
       },
       emits: {
         counterChanged(value) {
           console.log('counterChanged', value);
-          if (typeof(value) !== 'number') return false;
+          if (typeof (value) !== 'number') return false;
 
           return true;
         }
       },
-      data() {
-        return {
-          counter: 0
-        }
-      },
-      methods: {
-        inc() {
-          console.log('inc');
-          this.counter++;
-          this.$emit('counterChanged', this.counter);
-        },
-        dec() {
-          console.log('dec');
-          this.counter--;
-          this.$emit('counterChanged', this.counter);
-        }
-      },
-      mounted() {
-        console.log('counter-component-mounted...');
-        this.counter = this.initialValue;
-      }
     };
 
+    // Composable (react : hooks) zur Wiederverwendbarkeit durch Funktionen und nicht nur Komponenten
+    const useMessage = () => {
+      const message = Vue.ref("Hello World from Vue.js");
+      const getMessageInUpper = () => {
+        console.log('getMessageInUpper');
+        return message.value.toUpperCase();
+      };
+      // computed
+      const messageInLower = Vue.computed(() => {
+        console.log('messageInLower');
+        return message.value.toLowerCase();
+      });
+      return {
+        message,
+        getMessageInUpper,
+        messageInLower
+      }
+    }
 
     // Composition-API
     const app = Vue.createApp({
@@ -97,61 +123,54 @@
 
       setup() {
         console.log('app.setup');
-        // zur Initilisierung von Datenelementen gibt es 2 Befehle
-        const message = Vue.ref("Hello World from Vue.js");
-        const message2 = Vue.ref("Hello World from Vue.js");
+        // zur Initalisierung von Datenelementen gibt es 2 Befehle
+        // all about message
+
+        const { message, getMessageInUpper, messageInLower } = useMessage();
+        const { 
+          message: message2,
+          getMessageInUpper: getMessage2InUpper,
+          messageInLower: message2InLower 
+        } = useMessage();
+
+        Vue.watch(message, (newValue, oldValue) => {
+          console.log(newValue, oldValue);
+        })
+
+        const link = Vue.reactive({
+          title: "<b><i>Vue.js-Website</i></b>",
+          href: 'https://vuejs.org/'
+        });
+
+        const sayHello = () => {
+          console.log('You Clicked...!')
+        };
+
+        const logCounter = (value) => {
+          console.log('logCounter', value);
+        };
+
+        Vue.onMounted(() => {
+          console.log('app mounted')
+        });
 
         // im setup bauen wir unsere Datenstruktur auf und müssen sie dann auch hier zurückgeben.
         return {
           message,
-          message2
+          message2,
+          link,
+          getMessage2InUpper,
+          getMessageInUpper,
+          sayHello,
+          logCounter,
+          messageInLower,
+          message2InLower
         }
       },
-      data() {
-        return {
-          link: {
-            title: '<b><i>Vue.js-Website</i></b>',
-            href: 'https://vuejs.org/'
-          }
-        }
-      },
-      computed: {
-        messageInLower() {
-          console.log('messageInLower');
-          return this.message.toLowerCase();
-        },
-        message2InLower() {
-          console.log('message2InLower');
-          return this.message2.toLowerCase();
-        }
-      },
-      methods: {
-        getMessageInUpper() {
-          console.log('getMessageInUpper');
-          return this.message.toUpperCase();
-        },
-        getMessage2InUpper() {
-          console.log('getMessage2InUpper');
-          return this.message2.toUpperCase();
-        },
-        sayHello() {
-          console.log('You Clicked...!')
-        },
-        logCounter(value) {
-          console.log('logCounter', value);
-        }
-      },
-      watch: {
-        message(newValue, oldValue) {
-          console.log(newValue, oldValue);
-        }
-      },
-      mounted() {
-        console.log('app-mounted...');
-      }
     });
     app.mount('#app');
 
   </script>
 </body>
+
 </html>
