@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini-Shop</title>
+  <script src="vue.global.js"></script>
+</head>
+<body>
+  <h1>Mini-Shop</h1>
+
+  <div id="app">
+    <h2>Produkte</h2>
+    <ul>
+      <li>Product A</li>
+      <li>Product B</li>
+      <li>Product C: 123.45 <button> + </button></li>
+    </ul>
+
+
+    <h2>Warenkorb</h2>
+    <ul>
+      <li>Product C: 123.45 <button> - </button></li>
+    </ul>
+
+    <p>Betrag: 1234.56</p>
+  </div>
+
+
+
+  <script>
+    // Product = id, title, price
+    // products-List
+    // cart-List
+    // Composition-API
+
+    // Composables
+
+    const app = Vue.createApp({
+      components: {
+        
+      },
+
+      // Composition-API
+      setup() {
+        console.log('app.setup');
+
+        
+        Vue.onMounted(() => {
+          console.log('app-mounted...');
+        });
+
+        return {
+
+        }
+      }
+    });
+    app.mount('#app');
+
+  </script>
+</body>
+</html>
